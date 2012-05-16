@@ -10,7 +10,11 @@ class BlitzAPI {
     public $listener = null;
     
     public static $WAIT = 2;
-
+    /*
+     * construct the blitz api and logs user in.
+     * @email   $email registered at blitz.io
+     * @api_key provided at the settings page
+     */
     public function __construct($email = false, $api_key = false, $host = 'blitz.io', $port = 80) {
         //this means it's authenticated somewhere else, through cli
         if ($email === false || $api_key === false){
@@ -24,9 +28,8 @@ class BlitzAPI {
     }
     
     /*
-     * first request uses the api key supplied by user, since then
-     * it is set to $this->api_key and host and port already create since
-     * I reuse the same client
+     * wrapper for a get request by adding a 2 second delay 
+     * to accomodate blitz.io flood control
      */
 
     private function get($url) {
@@ -36,6 +39,10 @@ class BlitzAPI {
         return json_decode($result->response);
     }
 
+    /*
+     * wrapper for a post request by adding a 2 second delay 
+     * to accomodate blitz.io flood control
+     */
     private function post($url, $parameters) {
         sleep(self::$WAIT);
         $rest_client = $this->get_rest_client();
@@ -43,12 +50,19 @@ class BlitzAPI {
         return json_decode($result->response);
     }
     
+    /*
+     * wrapper for a put request by adding a 2 second delay 
+     * to accomodate blitz.io flood control
+     */
     private function put($url, $parameters = null){
         sleep(self::$WAIT);
         $rest_client = $this->get_rest_client();
         $result = $rest_client->put($url, $parameters);
         return json_decode($result->response);        
     }
+    /*
+     * to login the first time and acquire the api_key for subsequent requests
+     */
     public function login(){
         
         $result = $this->get('login/api');
@@ -58,6 +72,10 @@ class BlitzAPI {
             $this->api_key = $result->api_key;
         }
     }
+    /*
+     * get or create the rest client to reuse the same object.
+     * It also sets the appropriate header for authenticating the API requests
+     */
     public function get_rest_client($host = 'blitz.io', $port = 80) {
         if ($this->rest_client === null) {
 
@@ -76,7 +94,10 @@ class BlitzAPI {
         $this->rest_client->set_option('headers', $headers);
         return $this->rest_client;
     }
-
+    
+    /*
+     * parses the command. The same command from the blitz bar can be used here.
+     */
     public function parse($command) {
         $result = $this->post('api/1/parse', array('command' => $command));
         
@@ -87,7 +108,11 @@ class BlitzAPI {
             return $result->command;
         }
     }
-
+    
+    /*
+     * execute the curl command
+     * @command the string command from blitz bar can also be used here
+     */
     public function curl($command) {
         if ($this->listener === null) 
             throw new BlitzException('Please provide listeners');
@@ -99,6 +124,11 @@ class BlitzAPI {
         }
     }
 
+    
+    /*
+     * execute the rush command
+     * @command json object of the string returned from the parse API request
+     */
     public function rush($command) {
         $result = $this->post('api/1/curl/execute', $command);
         //acquire the job status
@@ -114,6 +144,11 @@ class BlitzAPI {
         }
     }
 
+    
+    /*
+     * execute the sprint command
+     * @command json object of the string returned from the parse API request
+     */
     public function sprint($command) {
         $result = $this->post('api/1/curl/execute', $command);
         //acquire the job status
@@ -127,6 +162,11 @@ class BlitzAPI {
             throw new BlitzException('Unable to execute sprint');
         }
     }
+    
+    /*
+     * execute the abort command, to abort the job
+     * @job_id  provide the alphanumeric job id to be aborted.
+     */
     public function abort($job_id){
         $result = $this->put('api/1/jobs/'.$job_id.'/abort');
 
@@ -137,6 +177,11 @@ class BlitzAPI {
             throw new BlitzException('Unable to abort job id: '.$job_id);
         }
     }
+    /*
+     * polling the job for updates, the listener is set as class variable to listen
+     * on queued, running, completed, error
+     * $job_id polling the provided job_id 
+     */
     private function poll($job_id) {
 
         //now we poll the job
