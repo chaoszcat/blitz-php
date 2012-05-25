@@ -17,10 +17,26 @@ Now, you are set to listen to events to get the data from the API by extending B
 
 ## Example ##
 
-    require_once ('blitz_api.php');
-    require_once ('blitz_listener.php');
+    require_once 'blitz_api.php';
 
+    class MyBlitzListener extends BlitzListener {
+    
+        public function on_status($result){
+            return $this->count_status++ < $this->max_status;
+        }
 
+        //will provide the result on the test completed
+        public function on_complete($result){
+            echo var_dump($result);
+        }
+
+        //will provide status data as it polls the API
+        public function on_status($result){
+            echo var_dump($result);
+        }
+    }
+
+    //acquire the username and api key from your blitz settings
     $blitz_api = new BlitzApi(<username>, <api key>);
 
     $blitz_api->listener = new MyBlitzListener();//extends from blitz_listener

@@ -1,11 +1,9 @@
 #!/usr/bin/php
 <?php
 //Include the test framework 
-
-
 require_once 'EnhanceTestFramework.php';
-require_once '../blitz_api.php';
-require_once '../blitz_listener.php';
+require_once '../blitz.php';
+
 class Blitz_Listener_Test extends BlitzListener {
     public $max_status = 1;
     public $count_status = 0;
@@ -31,7 +29,7 @@ class Blitz_Test extends \Enhance\TestFixture {
     private $mocked_rest_client = null;
     
     public function setUp() {
-        $this->blitz_api = new BlitzAPI();
+        $this->blitz_api = new Blitz();
         $this->mocked_rest_client = Enhance\MockFactory::createMock('RestClient');
         $set_expectation = \Enhance\Expect::method('set_option');
         $this->mocked_rest_client->addExpectation($set_expectation);

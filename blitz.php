@@ -1,7 +1,8 @@
 <?php
 require_once 'rest_client.php';
+require_once 'blitz_listener.php';
 
-class BlitzAPI {
+class Blitz {
 
     
     public $api_key = null;
