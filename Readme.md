@@ -20,10 +20,6 @@ Now, you are set to listen to events to get the data from the API by extending B
     require_once 'blitz_api.php';
 
     class MyBlitzListener extends BlitzListener {
-    
-        public function on_status($result){
-            return $this->count_status++ < $this->max_status;
-        }
 
         //will provide the result on the test completed
         public function on_complete($result){
