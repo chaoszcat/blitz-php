@@ -190,13 +190,8 @@ class Blitz {
             switch ($result->status) {
                 case 'queued':
                 case 'running':
-                    if ($this->listener->on_status($result)){
-                        break;
-                    }
-                    else{
-                        break 2;
-                    }
-                    
+                    $this->listener->on_status($result);
+                    break;
                 case 'completed':
                     $this->listener->on_completed($result->result);
                     break 2;
