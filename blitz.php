@@ -16,7 +16,7 @@ class Blitz {
      * @email   $email registered at blitz.io
      * @api_key provided at the settings page
      */
-    public function __construct($email = false, $api_key = false, $host = 'blitz.io', $port = 80) {
+    public function __construct($email = false, $api_key = false, $host = 'www.blitz.io', $port = 443) {
         //this means it's authenticated somewhere else, through cli
         if ($email === false || $api_key === false){
             return;
@@ -76,10 +76,10 @@ class Blitz {
      * get or create the rest client to reuse the same object.
      * It also sets the appropriate header for authenticating the API requests
      */
-    public function get_rest_client($host = 'blitz.io', $port = 80) {
+    public function get_rest_client($host = 'www.blitz.io', $port = 443) {
         if ($this->rest_client === null) {
 
-            $scheme = 'http';
+            $scheme = 'https';
             $this->rest_client = new \RestClient(array(
                         'base_url' => $scheme . '://' . $host . ':' . $port
                             )
