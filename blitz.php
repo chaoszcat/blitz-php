@@ -3,7 +3,6 @@ require_once 'rest_client.php';
 require_once 'blitz_listener.php';
 
 class Blitz {
-
     
     public $api_key = null;
     public $rest_client = null;
@@ -11,6 +10,7 @@ class Blitz {
     public $listener = null;
     
     public static $WAIT = 2;
+
     /*
      * construct the blitz api and logs user in.
      * @email   $email registered at blitz.io
@@ -32,7 +32,6 @@ class Blitz {
      * wrapper for a get request by adding a 2 second delay 
      * to accomodate blitz.io flood control
      */
-
     private function get($url) {
         sleep(self::$WAIT);
         $rest_client = $this->get_rest_client();
@@ -145,7 +144,6 @@ class Blitz {
         }
     }
 
-    
     /*
      * execute the sprint command
      * @command json object of the string returned from the parse API request
@@ -178,6 +176,7 @@ class Blitz {
             throw new BlitzException('Unable to abort job id: '.$job_id);
         }
     }
+
     /*
      * polling the job for updates, the listener is set as class variable to listen
      * on queued, running, completed, error
