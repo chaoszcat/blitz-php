@@ -3,7 +3,6 @@ require_once 'rest_client.php';
 require_once 'blitz_listener.php';
 
 class Blitz {
-
     
     public $api_key = null;
     public $rest_client = null;
@@ -11,12 +10,13 @@ class Blitz {
     public $listener = null;
     
     public static $WAIT = 2;
+
     /*
      * construct the blitz api and logs user in.
      * @email   $email registered at blitz.io
      * @api_key provided at the settings page
      */
-    public function __construct($email = false, $api_key = false, $host = 'blitz.io', $port = 80) {
+    public function __construct($email = false, $api_key = false, $host = 'www.blitz.io', $port = 443) {
         //this means it's authenticated somewhere else, through cli
         if ($email === false || $api_key === false){
             return;
@@ -32,7 +32,6 @@ class Blitz {
      * wrapper for a get request by adding a 2 second delay 
      * to accomodate blitz.io flood control
      */
-
     private function get($url) {
         sleep(self::$WAIT);
         $rest_client = $this->get_rest_client();
@@ -77,10 +76,10 @@ class Blitz {
      * get or create the rest client to reuse the same object.
      * It also sets the appropriate header for authenticating the API requests
      */
-    public function get_rest_client($host = 'blitz.io', $port = 80) {
+    public function get_rest_client($host = 'www.blitz.io', $port = 443) {
         if ($this->rest_client === null) {
 
-            $scheme = 'http';
+            $scheme = 'https';
             $this->rest_client = new \RestClient(array(
                         'base_url' => $scheme . '://' . $host . ':' . $port
                             )
@@ -145,7 +144,6 @@ class Blitz {
         }
     }
 
-    
     /*
      * execute the sprint command
      * @command json object of the string returned from the parse API request
@@ -178,6 +176,7 @@ class Blitz {
             throw new BlitzException('Unable to abort job id: '.$job_id);
         }
     }
+
     /*
      * polling the job for updates, the listener is set as class variable to listen
      * on queued, running, completed, error
@@ -191,13 +190,8 @@ class Blitz {
             switch ($result->status) {
                 case 'queued':
                 case 'running':
-                    if ($this->listener->on_status($result)){
-                        break;
-                    }
-                    else{
-                        break 2;
-                    }
-                    
+                    $this->listener->on_status($result);
+                    break;
                 case 'completed':
                     $this->listener->on_completed($result->result);
                     break 2;
