@@ -25,13 +25,21 @@ Now, you are set to listen to events to get the data from the API by extending B
     class MyBlitzListener extends BlitzListener {
 
         // will provide the result on the test completed
-        public function on_complete($result){
-            echo var_dump($result);
+        public function on_completed($result){
+            var_dump($result);
         }
 
         // will provide status data as it polls the API
         public function on_status($result){
-            echo var_dump($result);
+            var_dump($result);
+        }
+        
+        public funciton on_abort($result) {
+            var_dump($result);
+        }
+        
+        public funciton on_error($result) {
+            var_dump($result);
         }
     }
 
